@@ -17,20 +17,20 @@ SELECT
 		emp_id
 		,emp_name
 		FROM employee
-		WHERE emp_id = 201
+		WHERE emp_id = 201;
 
  
 -- 4. employee 테이블에서 부서 코드가 'D9'인 사원 조회
 SELECT
 		*
 	FROM employee
-	WHERE dept_code = 'D9'; -- error
+	WHERE dept_code = 'D9';
  
 -- 5. employee 테이블에서 직급 코드가 'J1'인 사원 조회
 SELECT
-		emp_name
+		*
 	FROM employee
-	WHERE sal_level = 'j1'; -- error
+	WHERE job_code = 'J1';
  
 -- 6. employee 테이블에서 급여가 300만원 이상(>=)인 사원의
 -- 사번, 이름, 부서코드, 급여를 조회하시오.
@@ -62,8 +62,7 @@ SELECT
 		,FLOOR(salary) AS 급여
 		,bonus 
 	FROM employee
-	WHERE ent_yn like 'n'
-	ORDER BY bonus asc;
+	WHERE bonus IS NULL;	-- error
  
 -- 9. 'D9' 부서에서 근무하지 않는 사원의
 -- 사번, 이름, 부서코드를 조회
@@ -78,20 +77,27 @@ SELECT
 -- 사번, 이름, 입사일을 별칭을 사용해 조회해 보기
 -- (퇴사 여부 컬럼은 ENT_YN이고 N은 퇴사 안한 사람, Y는 퇴사 한 사람)
 
-
+SELECT
+		a.EMP_ID AS 사번
+		,a.EMP_NAME	AS 이름
+		,a.HIRE_DATE AS 입사일
+	FROM employee a
+	WHERE a.ENT_YN = 'n';
+	
 -- 11. employee 테이블에서 급여 350만원 이상
 -- 550만원 이하를 받는 직원의
 -- 사번, 이름, 급여, 부서코드, 직급코드를 별칭을 사용해 조회해 보기
 SELECT
-		a.emp_id
-		,a.EMP_NAME
-		,a.SALARY
-		,a.DEPT_CODE
-		,a.SAL_LEVEL
+		a.emp_id AS 사번
+		,a.EMP_NAME AS 이름
+		,floor(a.SALARY) AS 급여
+		,a.DEPT_CODE AS 부서코드
+		,a.job_code AS 직급코드
 	FROM employee a
-	WHERE a.SALARY >= 3500000.0
-	AND <= 5500000.0; -- error
-
+	WHERE a.SALARY >= 3500000
+	AND a.SALARY <= 5500000;
+	-- WHERE salary BETWEEN 3500000 AND 5500000;
+	
 -- 12. employee 테이블에서 '성이 김씨'인 직원의 사번, 이름, 입사일 조회
 SELECT
 		emp_id
@@ -106,7 +112,8 @@ SELECT
 		,emp_name
 		,hire_date
 	FROM employee
-	WHERE emp_name not LIKE '김%';
+	WHERE emp_name not LIKE '김%'	--  =NOT emp_name LIKE '김%';
+	ORDER BY emp_name asc;
 
 -- 14. EMPLOYEE 테이블에서 '하'문자가 이름에 포함 된
 -- 직원의 이름, 주민번호, 부서코드 조회
@@ -122,10 +129,11 @@ SELECT
 SELECT
 		a.EMP_NAME
 		,floor(a.SALARY)
-		,a.SAL_LEVEL
+		,a.job_code
 	FROM employee a
-	WHERE a.SAL_LEVEL like 'j2'
-	AND a.SALARY >= 2000000; -- error
+	WHERE a.job_code like 'j2'
+	AND a.SALARY >= 2000000
+	OR a.JOB_CODE = 'j7';
  
 -- 16. 'J2'직급이거나 'J7'직급인 직원들 중에
 -- 급여가 200만원 이상인 직원의 이름, 급여, 직급코드 조회
@@ -133,18 +141,31 @@ SELECT
 SELECT
 		emp_name
 		, salary
-		,sal_level
+		,job_code
 	FROM employee
-	WHERE sal_level LIKE 'j2'
-	OR sal_level LIKE 'j7';
+	WHERE (job_code LIKE 'j2'
+	OR job_code LIKE 'j7')
+	AND salary >= 2000000;
 
 -- 17. IN 연산자로 업그레이드
-
+SELECT
+		emp_name
+		, salary
+		,job_code
+	FROM employee
+	WHERE job_code IN ('j2', 'j7')	-- in 연산자에서는 ('')사용
+	AND salary >= 2000000;
 
 -- ------------------------------------------
 -- <JOIN 사용 연습문제>              
 
 -- 1. 이름에 '형'자가 들어가는 직원들의 사번, 사원명, 부서명을 조회하시오.(1명)
+SELECT
+		a.EMP_ID
+		,a.EMP_NAME
+		,a.DEPT_CODE
+	FROM employee a
+	
 
 
 -- 2. 해외영업팀에 근무하는 사원명, 직급명, 부서코드, 부서명을 조회하시오.(9명)
@@ -159,7 +180,11 @@ SELECT
 -- 5. 급여 테이블의 등급별 최소급여(MIN_SAL)보다 많이 받는 직원들의
 -- 사원명, 직급명, 급여, 연봉을 조회하시오.
 -- 연봉에 보너스포인트를 적용하시오.(20명)
-
+SELECT
+		a.EMP_NAME
+		,a.SAL_LEVEL
+		,a.SALARY
+ FROM employee a
  
 -- 6. 한국(KO)과 일본(JP)에 근무하는 직원들의 
 -- 사원명, 부서명, 지역명, 국가명을 조회하시오.(15명)
